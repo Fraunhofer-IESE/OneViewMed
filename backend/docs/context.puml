@@ -1,0 +1,72 @@
+@startuml
+
+skinparam nodesep 100
+skinparam ranksep 80
+skinparam defaultTextAlignment center
+skinparam packageStyle rectangle
+skinparam actor {
+    stereotype {
+        font {
+            color gray
+            size 10
+        }
+    }
+}
+skinparam component {
+    stereotype {
+        font {
+            color gray
+            size 10
+        }
+    }
+}
+skinparam database {
+    stereotype {
+        font {
+            color gray
+            size 10
+        }
+    }
+}
+skinparam rectangle {
+    stereotype {
+        font {
+            color gray
+            size 10
+        }
+    }
+    background<<System>> {
+        color cornsilk
+    }
+}
+
+title "System Context"
+
+
+database "HAPI FHIR" <<FHIR repository>> as repository
+
+component "MetaVision" <<ICU CIS>> as icu
+component "ORBIS" <<CIS>> as kis
+
+package "OneViewMed Dashboard" <<System>> {
+
+    component "Backend" as backend
+
+    component "Frontend" as frontend
+
+}
+
+actor "Medical professional" <<role>> as medical_professional
+
+
+frontend --> backend
+backend ..> repository : read data
+
+icu ..> repository : write data
+kis ..> repository : write data
+
+medical_professional ..> frontend : uses
+medical_professional ..> icu : uses
+medical_professional ..> kis : uses
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+
+autoactivate on
+
+actor "User" as user
+participant "Frontend" as frontend
+participant "Backend" as backend
+
+user -> frontend : open dashboard view
+    frontend -> backend : get dashboard <back:lightgray>""patients/{id}/dashboard""
+    return dashboard
+    frontend -> frontend : calculate layout
+    return layout
+    loop each tile
+        frontend -> frontend : create visualization control
+        return
+        frontend -> backend : get dataset <back:lightgray>""patients/{id}/datasets/{type}/{name}""
+        return dataset
+        frontend -> frontend : set data for visualization
+        return
+    end loop
+return
+
+@enduml

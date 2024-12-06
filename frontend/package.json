@@ -1,0 +1,52 @@
+{
+  "name": "@one-view-med/frontend",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:ci": "eslint \"src/**/*.{js,ts,tsx}\" --max-warnings 0 && prettier \"src/**/*.{js,ts,tsx,css,scss,less}\" --check",
+    "lint:fix": "eslint \"src/**/*.{js,ts,tsx}\" --fix && prettier \"src/**/*.{js,ts,tsx,css,scss,less}\" --write",
+    "preview": "vite preview",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@fontsource/fira-sans": "^5.1.0",
+    "@mui/icons-material": "^5.16.9",
+    "@mui/material": "^5.16.9",
+    "@one-view-med/client-api": "v1.0.0-087236ad",
+    "@tanstack/react-query": "^5.62.2",
+    "@tanstack/react-query-devtools": "^5.62.2",
+    "date-fns": "^4.1.0",
+    "iso8601-duration": "^2.1.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-intl": "^6.8.9",
+    "react-router-dom": "^6.28.0",
+    "vite-plugin-svgr": "^4.3.0"
+  },
+  "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.62.1",
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "husky": "^9.1.7",
+    "prettier": "3.4.2",
+    "typescript": "~5.5.4",
+    "vite": "^5.4.11"
+  },
+  "packageManager": "yarn@4.5.3"
+}

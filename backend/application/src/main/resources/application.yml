@@ -1,0 +1,15 @@
+cors:
+  allowed-origins:
+    - https://oneviewmed.iese.fhg.de
+    - http://localhost:3000
+fhir:
+  repository-url: https://oneviewmed.iese.fhg.de/fhir/
+server:
+  shutdown: graceful
+spring:
+  jackson:
+    default-property-inclusion: non-null
+springdoc:
+  swagger-ui:
+    displayRequestDuration: true
+    deepLinking: true

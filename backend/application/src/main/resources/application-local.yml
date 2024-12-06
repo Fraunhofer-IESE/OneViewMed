@@ -1,0 +1,2 @@
+fhir:
+  repository-url: http://localhost:8081/fhir

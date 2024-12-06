@@ -1,0 +1,84 @@
+@startuml
+
+!include style.iuml
+
+'skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 80
+
+component "Frontend" as frontend {
+}
+
+component "Backend" as backend {
+    portout "Dashboard" as dashboard_port
+    portout "Patients" as patients_port
+    portout "Datasets" as datasets_port
+
+    component "FHIR" as fhir_component
+
+    component "Dashboard" as dashboard_component
+    component "Patients" as patients_component
+    component "Datasets" as datasets_component
+
+    patients_component <- dashboard_component
+    datasets_component <-- patients_component
+    fhir_component <-- datasets_component
+    fhir_component <-- patients_component
+
+    dashboard_component -- dashboard_port
+    patients_component -- patients_port
+    datasets_component -- datasets_port
+}
+
+() "Dashboard API" <<REST API>> as dashboard_api
+dashboard_port -- dashboard_api
+
+() "Patients API" <<REST API>> as patients_api
+patients_port -- patients_api
+
+() "Datasets API" <<REST API>> as datasets_api
+datasets_port -- datasets_api
+
+dashboard_api <.. frontend
+patients_api <.. frontend
+datasets_api <.. frontend
+
+@enduml
+@startuml
+
+!include style.iuml
+
+component "FHIR" as fhir_component {
+}
+
+component Datasets as datasets_component {
+
+    interface DatasetResolver {
+        getName(): string
+    }
+    interface ValueDatasetResolver {
+        resolveValueDataset(patientId, configuration): ValueDataset
+    }
+    interface TableDatasetResolver {
+        resolveTableDataset(patientId, configuration): TableDataset
+    }
+    DatasetResolver <|-- ValueDatasetResolver
+    DatasetResolver <|-- TableDatasetResolver
+
+    class DatasetsService {
+        resolveValueDataset(name, patientId, configuration): ValueDataset
+        resolveTableDataset(name, patientId, configuration): TableDataset
+    }
+
+    DatasetsService o-> DatasetResolver
+
+    class FhirDatasetResolver {
+    }
+    ValueDatasetResolver <|.. FhirDatasetResolver
+    TableDatasetResolver <|.. FhirDatasetResolver
+
+    fhir_component <-- FhirDatasetResolver
+
+}
+
+@enduml

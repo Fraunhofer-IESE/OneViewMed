@@ -1,0 +1,52 @@
+name: fhir-infrastructure
+
+services:
+  fhir-server:
+    image: hapiproject/hapi:latest
+    depends_on:
+      - fhir-database
+    configs:
+      - source: application
+        target: /app/config/application.yaml
+    ports:
+      - "8081:8080"
+
+  fhir-database:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: "hapi"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+configs:
+  application:
+    content: |
+      spring:
+        datasource:
+          url: 'jdbc:postgresql://fhir-database:5432/hapi'
+          username: admin
+          password: admin
+          driverClassName: org.postgresql.Driver
+        jpa:
+          properties:
+            hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+            hibernate.search.enabled: false
+      hapi:
+        fhir:
+          tester:
+            local_r4:
+              name: Local (R4)
+              server_address: 'http://localhost:8080/fhir'
+              refuse_to_fetch_third_party_urls: false
+              fhir_version: R4
+            local_r5:
+              name: Local (R5)
+              server_address: 'http://localhost:8080/fhir'
+              refuse_to_fetch_third_party_urls: false
+              fhir_version: R5
+
+volumes:
+  postgres-data:

@@ -1,0 +1,27 @@
+@startuml
+
+skinparam nodesep 120
+skinparam ranksep 120
+
+hide empty members
+hide circle
+
+skinparam class {
+    font {
+        style bold
+    }
+    stereotype {
+        font {
+            color gray
+            size 10
+        }
+    }
+    background<<Coding>> {
+        color beige
+    }
+    background<<Extension>> {
+        color cornsilk
+    }
+}
+
+@enduml

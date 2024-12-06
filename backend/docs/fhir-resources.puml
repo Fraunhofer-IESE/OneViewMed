@@ -1,0 +1,319 @@
+@startuml
+
+!include style.iuml
+
+class Attachment <<Attachment>> {
+    title: string[0..1]
+    url: url[0..1]
+}
+
+class Content <<BackboneElement>> {
+}
+Content *-- Attachment : attachment
+
+class Context <<BackboneElement>> {
+    practiceSetting: CodeableConcept[0..1]
+}
+
+class DocumentReference <<DocumentReference>> {
+    subject: Reference(Patient)
+    type: CodeableConcept[0..1]
+    date: instant[0..1]
+}
+DocumentReference *-- "1..*" Content : content
+DocumentReference *-- "0..1" Context : context
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class Communication <<BackboneElement>> {
+    language: CodeableConcept
+    preferred boolean[0..1]
+}
+
+class Contact <<BackboneElement>> {
+    name: HumanName[0..*]
+    relationship: CodeableConcept[0..*]
+    telecom: ContactPoint[0..*]
+    address: Address[0..1]
+}
+
+class EmergencyContactCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/v2-0131"
+    code: "C"
+}
+Contact::relationship ..> EmergencyContactCoding
+
+class ContactRoleCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+}
+Contact::relationship ..> ContactRoleCoding
+
+class GeneralPractitioner <<Practitioner>> {
+    name: HumanName[0..*]
+    gender code[0..1]
+    telecom ContactPoint[0..*]
+    address Address[0..*]
+}
+
+class Identifier <<Identifier>> {
+    type: CodeableConcept[0..1]
+    value: string[0..1]
+}
+
+class CaseNumberCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/v2-0203"
+    code: "VN"
+}
+
+class CadavericDonorExtension <<Extension>> {
+    url: "http://hl7.org/fhir/StructureDefinition/patient-cadavericDonor"
+    value: boolean
+}
+
+class Patient <<Patient>> {
+    id: id
+    extension: Extension[0..*]
+    active: boolean[0..1]
+    deceasedBoolean: boolean[0..1]
+    deceasedDateTime: dateTime[0..1]
+    name: HumanName[0..*]
+    birthDate date[0..1]
+}
+Patient *-- "0..*" Identifier : identifier
+Patient *-- "0..*" Contact : contact
+Patient *-- "0..*" GeneralPractitioner : generalPractitioner
+Patient *-- "0..*" Communication : communication
+Patient::extension ..> CadavericDonorExtension
+Identifier::type ..> CaseNumberCoding
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class RelatedPerson <<RelatedPerson>> {
+    patient: Reference(Patient)
+    relationship: CodeableConcept[0..*]
+}
+
+class GuardRoleCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+    code: "GUARD"
+}
+
+RelatedPerson::relationship ..> GuardRoleCoding
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class DoNotResuscitateCategoryCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/consentcategorycodes"
+    code: "dnr"
+}
+
+class HealthCareDirectiveCategoryCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/consentcategorycodes"
+    code: "hcd"
+}
+
+class POLSTCategoryCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/consentcategorycodes"
+    code: "polst"
+}
+
+class Consent <<Consent>> {
+    patient: Reference(Patient)
+    category: CodeableConcept[1..*]
+}
+Consent::category ..> DoNotResuscitateCategoryCoding
+Consent::category ..> HealthCareDirectiveCategoryCoding
+Consent::category ..> POLSTCategoryCoding
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class LaboratoryCategoryCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/observation-category"
+    code: "laboratory"
+}
+
+class VitalSignsCategoryCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/observation-category"
+    code: "vital-signs"
+}
+
+class Observation <<Observation>> {
+    encounter: Reference(Encounter)
+    subject: Reference(Patient)
+    code: CodeableConcept
+    status: code
+    category: CodeableConcept[0..*]
+    issued: instant[0..1]
+    valueQuantity: Quantity[0..1]
+    note: Annotation[0..*]
+}
+Observation::category ..> LaboratoryCategoryCoding
+Observation::category ..> VitalSignsCategoryCoding
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class PrincipalDiagnosisCoding <<Coding>> {
+    system: "http://terminology.hl7.org/CodeSystem/diagnosis-role"
+    code: "CC"
+}
+
+class Diagnosis <<BackboneElement>> {
+    use: CodeableConcept[0..1]
+}
+Diagnosis::use ..> PrincipalDiagnosisCoding
+
+class Location <<BackboneElement>> {
+    location: Reference(Location)
+}
+
+class InpatientEncounterCoding <<Coding>> {
+    system: "http://terminology.hl7.org/ValueSet/encounter-class"
+    code: "IMP"
+}
+
+class EncounterNameExtension <<Extension>> {
+    url: "https://oneviewmed.iese.fhg.de/fhir#encounter-title"
+    value: string
+}
+
+class Encounter <<Encounter>> {
+    extension: Extension[0..*]
+    id: id
+    subject: Reference(Patient)
+    class: Coding
+    status: code
+    period: Period[0..1]
+}
+
+Encounter  *-- Diagnosis : diagnosis
+Encounter *-- "0..*" Location : location
+Encounter::class ..> InpatientEncounterCoding
+Encounter::extension ..> EncounterNameExtension
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class Location <<Location>> {
+    name: string[0..1]
+}
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class Condition <<Condition>> {
+    subject: Reference(Patient)
+    encounter: Reference(Encounter)
+    category: CodeableConcept[0..*]
+    code: CodeableConcept[0..1]
+    recordedDate: dateTime[0..1]
+    onsetDateTime: dateTime[0..1]
+    onsetAge: Age[0..1]
+    onsetPeriod: Period[0..1]
+    onsetRange: Range[0..1]
+    onsetString: string[0..1]
+    bodySite: CodeableConcept[0..*]
+}
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class MainSurgeryExtension <<Extension>> {
+    url: "https://oneviewmed.iese.fhg.de/fhir#surgery-main"
+    value: boolean
+}
+
+class SurgicalProcedureCategoryCoding <<Coding>> {
+    system: "http://hl7.org/fhir/ValueSet/procedure-category"
+    code: "387713003"
+}
+
+class Procedure <<Procedure>> {
+    extension: Extension[0..*]
+    code: CodeableConcept[0..1]
+    status: code
+    subject: Reference(Patient)
+    category: CodeableConcept[0..1]
+    performedDateTime: dateTime[0..1]
+    performedPeriod: Period[0..1]
+    complication: CodeableConcept[0..*]
+    complicationDetail: Reference(Condition)[0..*]
+    performedDateTime: dateTime[0..1]
+    performedPeriod: Period[0..1]
+    performedString: string[0..1]
+    performedAge: Age[0..1]
+    performedRange: Range[0..1]
+    note: Annotation[0..*]
+    report: Reference(DocumentReference)[0..*]
+}
+Procedure::extension ..> MainSurgeryExtension
+Procedure::category ..> SurgicalProcedureCategoryCoding
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class Medication <<Medication>> {
+    id: id
+    code: CodeableConcept[0..1]
+    form: CodeableConcept[0..1]
+}
+
+class DispenseRequest <<BackboneElement>> {
+    validityPeriod: Period[0..1]
+}
+
+class MedicationRequest <<MedicationRequest>> {
+    subject: Reference(Patient)
+    status: code
+    authoredOn: dateTime
+    medicationReference: Reference(Medication)
+    dosageInstruction: Dosage[0..*]
+    note: Annotation[0..*]
+}
+MedicationRequest *-- "0..1" DispenseRequest : dispenseRequest
+MedicationRequest::medicationReference ..> Medication
+
+class MedicationStatement <<MedicationStatement>> {
+    subject: Reference(Patient)
+    effectiveDateTime: dateTime[0..1]
+    effectivePeriod: Period[0..1]
+    medicationReference: Reference(Medication)
+    note: Annotation[0..*]
+    dosage: Dosage[0..*]
+}
+MedicationStatement::medicationReference ..> Medication
+
+@enduml
+@startuml
+
+!include style.iuml
+
+class AllergyIntolerance <<AllergyIntolerance>> {
+    patient: Reference(Patient)
+    type: code
+    code: CodeableConcept[0..1]
+}
+
+@enduml

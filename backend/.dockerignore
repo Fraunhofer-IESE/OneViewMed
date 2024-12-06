@@ -1,0 +1,8 @@
+target/classes/
+target/test-classes/
+target/generated-*
+target/maven-*
+target/jacoco.exec
+.idea
+.vscode
+.git
